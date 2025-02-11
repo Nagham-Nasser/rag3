@@ -1,9 +1,8 @@
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.llms import OpenAI
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.llms import HuggingFaceLLM
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -46,8 +45,8 @@ docs = load_and_process_pdf()
 vectorstore = create_embeddings(docs)  # Pass docs to the function
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 
-# Initialize the OpenAI model
-llm = OpenAI(model_name="text-davinci-003", temperature=0, api_key=huggingface_api_key)
+# Initialize the Hugging Face model
+llm = HuggingFaceLLM(api_key=huggingface_api_key)
 
 # Define the system prompt
 system_prompt = (
