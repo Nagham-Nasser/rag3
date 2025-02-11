@@ -2,7 +2,8 @@ import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceLLM
+from transformers import pipeline
+from langchain.llms import HuggingFacePipeline
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -27,12 +28,12 @@ def load_and_process_pdf():
         st.error(f"Error loading or processing PDF: {e}")
         st.stop()
 
-@st.cache_resource  # Use @st.cache_resource for unserializable objects
-def create_embeddings(_docs):  # Add leading underscore to avoid hashing
+@st.cache_resource
+def create_embeddings(_docs):
     try:
         # Create embeddings and FAISS vector store
-        embeddings = HuggingFaceEmbeddings(api_key=huggingface_api_key)
-        vectorstore = FAISS.from_documents(_docs, embeddings)  # Use _docs here
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        vectorstore = FAISS.from_documents(_docs, embeddings)
         return vectorstore
     except Exception as e:
         st.error(f"Error creating embeddings: {e}")
@@ -42,11 +43,14 @@ def create_embeddings(_docs):  # Add leading underscore to avoid hashing
 docs = load_and_process_pdf()
 
 # Create embeddings and FAISS vector store
-vectorstore = create_embeddings(docs)  # Pass docs to the function
+vectorstore = create_embeddings(docs)
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 
-# Initialize the Hugging Face model
-llm = HuggingFaceLLM(api_key=huggingface_api_key)
+# Initialize Hugging Face pipeline for LLM
+hf_pipeline = pipeline("text-generation", model="gpt2")
+
+# Create LLM from the Hugging Face pipeline
+llm = HuggingFacePipeline(pipeline=hf_pipeline)
 
 # Define the system prompt
 system_prompt = (
