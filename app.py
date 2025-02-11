@@ -9,6 +9,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 import os
+os.environ["STREAMLIT_WATCH_FILE"] = "none"  # Disables Streamlit file watching entirely for compatibility with PyTorch
 
 # Disable Streamlit's file watcher for PyTorch compatibility
 os.environ["STREAMLIT_WATCH_FILE"] = "false"
