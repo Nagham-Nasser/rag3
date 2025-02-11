@@ -1,9 +1,7 @@
 streamlit
 langchain-community
-langchain
+langchain-huggingface
 python-dotenv
 pypdf
 faiss-cpu
 transformers
-sentence-transformers
-langchain-huggingface
