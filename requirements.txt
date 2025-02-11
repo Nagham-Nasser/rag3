@@ -6,3 +6,4 @@ pypdf
 faiss-cpu
 transformers
 sentence-transformers
+langchain-huggingface
